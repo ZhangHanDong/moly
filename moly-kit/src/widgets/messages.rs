@@ -165,6 +165,12 @@ live_design! {
         }
     }
 
+    // Note: For now, let's use bot's apparence for app messages.
+    // Idea: With the current design, this can be something centered and fit
+    // up to the fill size. If we drop the current design and simplify it, we could
+    // just use the bot's design for all messages.
+    AppLine = <BotLine> {}
+
     pub Messages = {{Messages}} {
         flow: Overlay,
         list = <PortalList> {
@@ -174,6 +180,7 @@ live_design! {
             UserLine = <UserLine> {}
             BotLine = <BotLine> {}
             LoadingLine = <LoadingLine> {}
+            AppLine = <AppLine> {}
 
             // Acts as marker for:
             // - Knowing if the end of the list has been reached.
@@ -339,7 +346,12 @@ impl Messages {
                         item.draw_all(cx, &mut Scope::empty());
                         self.is_list_end_drawn = true;
                     } else {
-                        todo!();
+                        let item = list.item(cx, index, live_id!(AppLine));
+                        item.avatar(id!(avatar)).borrow_mut().unwrap().avatar =
+                            Some(Picture::Grapheme("A".into()));
+                        item.label(id!(name)).set_text(cx, "Application");
+                        item.label(id!(text.markdown)).set_text(cx, &message.body);
+                        item.draw_all(cx, &mut Scope::empty());
                     }
                 }
                 EntityId::User => {
